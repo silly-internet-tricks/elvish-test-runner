@@ -12,7 +12,7 @@ use ./solution
 fn make-test { |name expected test-input|
   # TODO: maybe see about not hardcoding the solution function name
   var test-function = {}
-  eval "set test-function = {\n    var test = [\n      &name=\""$name"\"\n      &expected=\""$expected"\"\n    ]\n    try {\n      put (assoc $test actual (solution:hey \""$test-input"\"))\n    } catch error {\n      fail (assoc $test message $error)\n    }\n  }"
+  eval "set test-function = {\n    var test = [\n      &name=\""$name"\"\n      &expected=\""$expected"\"\n    ]\n    try {\n      use ./solution\n      put (assoc $test actual (solution:hey \""$test-input"\"))\n    } catch error {\n      fail (assoc $test message $error)\n    }\n  }"
   put $test-function
 }
 

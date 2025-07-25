@@ -1,19 +1,16 @@
-# NOTE: for list append, try
-
 fn append { |l e|
   put [$@l $e]
 }
 
 fn map-over { |f l|
-  var result = []
+  var map-over-result = []
   for e $l {
-    set result = (append $result ($f $e))
+    set map-over-result = (append $map-over-result ($f $e))
   }
 
-  put $result
+  put $map-over-result
 }
 
-# TODO: test this one
 fn fold { |f l acc|
   for e $l {
     set acc = ($f $e $acc)
@@ -40,12 +37,12 @@ var tests = (test:tests)
 var test-runs = (map-over { |test|
   var status = "error"
   var test-result = [&]
-  # TODO: handle errors
   # TODO: capture output
   try {
     set test-result = ($test)
   } catch e {
     set test-result = $e
+    set status = "error"
   } else {
     if (eq $test-result[actual] $test-result[expected]) {
       set status = "pass"
@@ -54,21 +51,18 @@ var test-runs = (map-over { |test|
     }
   }
 
-  var result = {
+  var final-test-result = [
     &name=$test-result[name]
     &status=$status
     &test_code=$test[def]
-  }
+  ]
 
   if (eq $status "fail") {
-    var message = "Expected "$test-result[expected]" but got "$test-result[actual]
-    set result = (assoc result message $message)
+    var message = "Expected \""$test-result[expected]"\", but got \""$test-result[actual]"\"!"
+    set final-test-result = (assoc $final-test-result message $message)
   }
 
-  if (eq $status "error") {
-
-  }
-
+  put $final-test-result
 } $tests)
 
 # now put together the final json output
