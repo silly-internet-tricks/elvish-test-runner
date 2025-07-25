@@ -1,3 +1,5 @@
+# NOTE: the test and solution files should be copied to ./bin/test.elv and ./bin/solution.elv in bash before running this script
+
 fn append { |l e|
   put [$@l $e]
 }
@@ -18,13 +20,6 @@ fn fold { |f l acc|
 
   put $acc
 }
-
-# TODO: handle errors when trying to copy the test and solution files
-
-# $args[0] should be ./tests/example-syntax-error/MiniBob
-# (for the moment)
-cp $args[0].test.elv ./test.elv
-cp $args[0].elv ./solution.elv
 
 # TODO: handle errors when trying to import
 
@@ -68,21 +63,23 @@ var test-runs = (map-over { |test|
 # now put together the final json output
 
 var status = (fold { |e acc|
-  if (and (eq $acc "error") (eq $e[status] "error") {
+  if (and (eq $acc "error") (eq $e[status] "error")) {
     put "error"
-  } elif (or (eq $acc "fail")
-             (or (eq $e[status] "fail")
-                 (eq $e[status] "error")) {
+  } elif (or (eq $acc "fail") ^
+             (or (eq $e[status] "fail") ^
+                 (eq $e[status] "error"))) {
     put "fail"
   } elif (eq $e[status] "pass") {
     put "pass"
   } else {
     fail "invalid status"
   }
-} "error")
+} $test-runs "error")
 
 var output = [
   &version=(num 2)
   &status=$status
-  &tests=$test-results
+  &tests=$test-runs
 ]
+
+put $output | to-json
