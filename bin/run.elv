@@ -1,50 +1,94 @@
-# NOTES:
+# NOTE: for list append, try
 
-# first step, is to import the tests
-# the test path should be passed in as an arg
-# (probably the only arg, I'm thinking)
+fn append { |l e|
+  put [$@l $e]
+}
 
-# now, I will copy the test file to a hardcoded location
-# so that it can be used as a module
+fn map-over { |f l|
+  var result = []
+  for e $l {
+    set result = (append $result ($f $e))
+  }
 
+  put $result
+}
+
+# TODO: test this one
+fn fold { |f l acc|
+  for e $l {
+    set acc = ($f $e $acc)
+  }
+
+  put $acc
+}
+
+# TODO: handle errors when trying to copy the test and solution files
+
+# $args[0] should be ./tests/example-syntax-error/MiniBob
+# (for the moment)
 cp $args[0].test.elv ./test.elv
 cp $args[0].elv ./solution.elv
+
+# TODO: handle errors when trying to import
+
 use ./test
 var tests = (test:tests)
 
-var tests-run = (num 0)
-var tests-passed = (num 0)
-var tests-failed = (num 0)
-var tests-errored = (num 0)
-
-
-
 # This file will produce a JSON output, that matches the spec here:
 #     https://exercism.org/docs/building/tooling/test-runners/interface
-# (atm, I am thinking of just printing the file line by line)
-# the first two lines:
-# {
-#   "version": 2,
-# then on the third line, we need to fill in the status with pass, fail or error
-#   "status": "pass|fail|error",
-# on line four, the message needs to be filled in if the status is error
-# line four can be omitted otherwise
-# the next two lines are:
-#   "tests": [
-#     {
 
+var test-runs = (map-over { |test|
+  var status = "error"
+  var test-result = [&]
+  # TODO: handle errors
+  # TODO: capture output
+  try {
+    set test-result = ($test)
+  } catch e {
+    set test-result = $e
+  } else {
+    if (eq $test-result[actual] $test-result[expected]) {
+      set status = "pass"
+    } else {
+      set status = "fail"
+    }
+  }
 
-# {
-#   "version": 2,
-#   "status": "fail",
-#   "message": null,
-#   "tests": [
-#     {
-#       "name": "Test that the thing works",
-#       "status": "fail",
-#       "message": "Expected 42 but got 123123",
-#       "output": "Debugging information output by the user",
-#       "test_code": "assert_equal 42, answerToTheUltimateQuestion()"
-#     }
-#   ]
-# }
+  var result = {
+    &name=$test-result[name]
+    &status=$status
+    &test_code=$test[def]
+  }
+
+  if (eq $status "fail") {
+    var message = "Expected "$test-result[expected]" but got "$test-result[actual]
+    set result = (assoc result message $message)
+  }
+
+  if (eq $status "error") {
+
+  }
+
+} $tests)
+
+# now put together the final json output
+
+var status = (fold { |e acc|
+  if (and (eq $acc "error") (eq $e[status] "error") {
+    put "error"
+  } elif (or (eq $acc "fail")
+             (or (eq $e[status] "fail")
+                 (eq $e[status] "error")) {
+    put "fail"
+  } elif (eq $e[status] "pass") {
+    put "pass"
+  } else {
+    fail "invalid status"
+  }
+} "error")
+
+var output = [
+  &version=(num 2)
+  &status=$status
+  &tests=$test-results
+]
