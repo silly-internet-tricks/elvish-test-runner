@@ -36,7 +36,9 @@ var test-runs = (map-over { |test|
   try {
     set test-result = ($test)
   } catch e {
-    set test-result = $e
+    # for future reference, here is a sample of an error I got back 😁
+    # [^exception &reason=[^fail-error &content=[&expected=Whatever. &message=[^exception &reason=<unknown variable $solution:hey~ not found> &stack-trace=<...>] &name='stating something'] &type=fail] &stack-trace=<...>]
+    set test-result = $e[reason][content]
     set status = "error"
   } else {
     if (eq $test-result[actual] $test-result[expected]) {
@@ -52,20 +54,27 @@ var test-runs = (map-over { |test|
     &test_code=$test[def]
   ]
 
+  var message = ok
+
   if (eq $status "fail") {
-    var message = "Expected \""$test-result[expected]"\", but got \""$test-result[actual]"\"!"
+    set message = "Expected \""$test-result[expected]"\", but got \""$test-result[actual]"\"!"
+  }
+
+  if (eq $status "error") {
+    set message = (echo $test-result[message][reason])
+  }
+
+  if (not-eq $status "pass") {
     set final-test-result = (assoc $final-test-result message $message)
   }
 
   put $final-test-result
 } $tests)
 
-# now put together the final json output
-
+# I believe that the only way the status should come back "error"
+# is if the count of $test-runs is zero
 var status = (fold { |e acc|
-  if (and (eq $acc "error") (eq $e[status] "error")) {
-    put "error"
-  } elif (or (eq $acc "fail") ^
+  if (or (eq $acc "fail") ^
              (or (eq $e[status] "fail") ^
                  (eq $e[status] "error"))) {
     put "fail"

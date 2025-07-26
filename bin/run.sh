@@ -32,8 +32,17 @@ mkdir -p "${output_dir}"
 
 echo "${slug}: testing..."
 
-cp "$solution_dir/$slug.test.elv" ./bin/test.elv && cp "$solution_dir/$slug.elv" ./bin/solution.elv && elvish ./bin/run.elv > "$results_file"
+rm -f ./**/test.elv
+rm -f ./**/solution.elv
+test_original="$solution_dir/$slug.test.elv"
+cp -f "$slug/test-original.elv" "$test_original"
+solution_original="$solution_dir/$slug.elv"
+echo "$test_original"
+echo "$solution_original"
+cp -f "$test_original" "./bin/test.elv"
+cp -f "$solution_original" "./bin/solution.elv"
+elvish "./bin/run.elv" > "$results_file"
 
-cp ./tests/example-syntax-error/MiniBob.test.elv ./bin/test.elv && cp ./tests/example-syntax-error/MiniBob.elv ./bin/solution.elv && elvish ./bin/run.elv
+echo "wrote json results to $results_file"
 
 echo "${slug}: done"
