@@ -5,13 +5,13 @@
     {
       "name": "stating something",
       "status": "error",
-      "message": "\u003cunknown no such module: ./solution\u003e",
+      "message": "\u003cunknown variable $solution:hey~ not found\u003e",
       "test_code": "{\n    var test = [\n      \u0026name=\"stating something\"\n      \u0026expected=\"Whatever.\"\n    ]\n    try {\n      use ./solution\n      put (assoc $test actual (solution:hey \"Tom-ay-to, tom-aaaah-to.\"))\n    } catch error {\n      fail (assoc $test message $error)\n    }\n  }"
     },
     {
       "name": "shouting",
       "status": "error",
-      "message": "\u003cunknown no such module: ./solution\u003e",
+      "message": "\u003cunknown variable $solution:hey~ not found\u003e",
       "test_code": "{\n    var test = [\n      \u0026name=\"shouting\"\n      \u0026expected=\"Whoa, chill out!\"\n    ]\n    try {\n      use ./solution\n      put (assoc $test actual (solution:hey \"WATCH OUT!\"))\n    } catch error {\n      fail (assoc $test message $error)\n    }\n  }"
     }
   ]
