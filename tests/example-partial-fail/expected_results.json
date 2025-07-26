@@ -1,0 +1,18 @@
+{
+  "status": "fail",
+  "version": 2,
+  "tests": [
+    {
+      "name": "stating something",
+      "status": "pass",
+      "test_code": "{\n    var test = [\n      \u0026name=\"stating something\"\n      \u0026expected=\"Whatever.\"\n    ]\n    try {\n      use ./solution\n      put (assoc $test actual (solution:hey \"Tom-ay-to, tom-aaaah-to.\"))\n    } catch error {\n      fail (assoc $test message $error)\n    }\n  }"
+    },
+    {
+      "name": "shouting",
+      "status": "fail",
+      "message": "Expected \"Whoa, chill out!\", but got \"xxx\"!",
+      "test_code": "{\n    var test = [\n      \u0026name=\"shouting\"\n      \u0026expected=\"Whoa, chill out!\"\n    ]\n    try {\n      use ./solution\n      put (assoc $test actual (solution:hey \"WATCH OUT!\"))\n    } catch error {\n      fail (assoc $test message $error)\n    }\n  }"
+    }
+  ]
+}
+
